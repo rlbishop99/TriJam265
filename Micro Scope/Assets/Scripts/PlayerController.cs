@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
+
+    private GameManager gameManager;
     public float speed;
     private float x;
     private float y;
@@ -20,7 +22,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameManager.Instance;
     }
 
     // Update is called once per frame
@@ -30,8 +32,13 @@ public class PlayerController : MonoBehaviour
         yPos = transform.position.y;
         CheckBounds(xPos, yPos);
 
-        x = Input.GetAxis("Horizontal");
-        y = Input.GetAxis("Vertical");
+        if(gameManager.acceptInput == true) {
+            x = Input.GetAxis("Horizontal");
+            y = Input.GetAxis("Vertical");
+            speed = 5;   
+        } else {
+            speed = 0;
+        }
 
         Vector3 dir = new Vector3(x, y, 0);
 
