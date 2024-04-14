@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     public Camera gameCamera;
     public AudioSource audioSource;
     public AudioClip[] sounds;
+    public AudioSource music;
+    public AudioSource scroll;
 
     private bool timeToSpawn = false;
     private bool currentVirusHasSpawned = false;
@@ -30,8 +32,18 @@ public class GameManager : MonoBehaviour
     private bool playingQTE = false;
     public bool acceptInput;
 
+    private bool isGamePause = false;
+
+    public GameObject virusSprite;
+    public GameObject pauseMenu;
+    public GameObject gameOverMenu;
+    public TextMeshProUGUI finalScoreText;
+
+    private AudioManager audioManager;
+
     private void Awake() {
-        if(Instance == null) {
+        audioManager = AudioManager.Instance;
+        if (Instance == null) {
             DontDestroyOnLoad(gameObject);
             Instance = this;
         } else if(Instance != this) {
@@ -39,6 +51,8 @@ public class GameManager : MonoBehaviour
         }
 
         acceptInput = true;
+        audioManager.destoryObjects();
+        DestroyObject(audioManager);
     }
 
 
@@ -53,18 +67,74 @@ public class GameManager : MonoBehaviour
         timeToSpawn = true;
     }
 
+    public void Restart()
+    {
+        scoreCount = 0;
+        scoreText.text = scoreCount.ToString();
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Virus");
+
+        foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+
+        Destroy(GameObject.FindGameObjectWithTag("killer"));
+
+        currentVirus = viruses[Random.Range(0, viruses.Length)];
+        currentVirusHasSpawned = false;
+
+        timeToSpawn = true;
+        acceptInput = true;
+
+        pauseGame();
+    }
+
+    public void playAgain()
+    {
+        scoreCount = 0;
+        scoreText.text = scoreCount.ToString();
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Virus");
+
+        foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+
+        Destroy(GameObject.FindGameObjectWithTag("killer"));
+
+        currentVirus = viruses[Random.Range(0, viruses.Length)];
+        currentVirusHasSpawned = false;
+
+        timeToSpawn = true;
+        acceptInput = true;
+
+        isGamePause = false;
+        gameOverMenu.SetActive(isGamePause);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if(timeToSpawn == true){
-            SpawnViruses();
-        }
+        if (!isGamePause)
+        {
+            if (timeToSpawn == true)
+            {
+                SpawnViruses();
+            }
 
-        if(playingQTE == true) {
-            PlayQTE();
-        }
+            if (playingQTE == true)
+            {
+                PlayQTE();
+            }
 
-        //GetClosest();
+            //GetClosest();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            pauseGame();
+        }
     }
 
     void SpawnViruses(){
@@ -76,6 +146,7 @@ public class GameManager : MonoBehaviour
             if(virusToSpawn == currentVirus && currentVirusHasSpawned != true){
                 currentVirusHasSpawned = true;
                 virusToSpawn.gameObject.tag = "killer";
+                virusSprite.GetComponent<SpriteRenderer>().sprite = currentVirus.GetComponent<SpriteRenderer>().sprite;
             } else {
                 while(virusToSpawn == currentVirus) {
                     virusToSpawn = viruses[Random.Range(0, viruses.Length)];
@@ -89,15 +160,16 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void CheckVirus(GameObject clickedVirus) {
+    public bool CheckVirus(GameObject clickedVirus) {
 
         if(clickedVirus.tag != "killer"){
             clickedVirus.GetComponent<VirusController>().correctVirus("no");
             audioSource.PlayOneShot(sounds[3]);
-            return;
+            return false;
         } else{
             clickedVirus.GetComponent<VirusController>().correctVirus("yes");
             StartQTE(clickedVirus);
+            return true;
         }
 
     }
@@ -213,8 +285,27 @@ public class GameManager : MonoBehaviour
 
     public void GameOver(){
 
-        Time.timeScale = 0.0f;
+        //Time.timeScale = 0.0f;
+        isGamePause = !isGamePause;
+        gameOverMenu.SetActive(isGamePause);
+        finalScoreText.text = "Score: " + scoreCount.ToString();
+    }
 
+    public bool checkPause()
+    {
+        return isGamePause;
+    }
+
+    public void pauseGame()
+    {
+        isGamePause = !isGamePause;
+        pauseMenu.SetActive(isGamePause);
+    }
+
+    public void destoryGameObject()
+    {
+        Destroy(gameObject);
+        DestroyObject(music);
     }
 
     // void GetClosest(){

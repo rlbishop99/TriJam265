@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    public AudioSource scroll;
+    private bool scrollplaying = false;
 
     private GameManager gameManager;
     public float speed;
@@ -23,26 +24,46 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         gameManager = GameManager.Instance;
+        scroll = GameManager.Instance.scroll;
     }
 
     // Update is called once per frame
     void Update()
     {
-        xPos = transform.position.x;
-        yPos = transform.position.y;
-        CheckBounds(xPos, yPos);
+        if (!GameManager.Instance.checkPause())
+        {
+            xPos = transform.position.x;
+            yPos = transform.position.y;
+            CheckBounds(xPos, yPos);
 
-        if(gameManager.acceptInput == true) {
-            x = Input.GetAxis("Horizontal");
-            y = Input.GetAxis("Vertical");
-            speed = 5;   
-        } else {
-            speed = 0;
+            if (gameManager.acceptInput == true)
+            {
+                x = Input.GetAxis("Horizontal");
+                y = Input.GetAxis("Vertical");
+                speed = 5;
+
+                if ((x != 0 || y != 0) && !scrollplaying)
+                {
+                    scroll.Play();
+                    scrollplaying = true;
+                }
+                else
+                {
+                    scroll.Stop();
+                    scrollplaying = false;
+                }
+            }
+            else
+            {
+                speed = 0;
+                scroll.Stop();
+                scrollplaying = false;
+            }
+
+            Vector3 dir = new Vector3(x, y, 0);
+
+            transform.Translate(dir * speed * Time.deltaTime);
         }
-
-        Vector3 dir = new Vector3(x, y, 0);
-
-        transform.Translate(dir * speed * Time.deltaTime);
     }
 
     void CheckBounds(float x, float y) {

@@ -19,19 +19,28 @@ public class HealthManager : MonoBehaviour
         timer = 120f;
     }
 
+    public void restartTimer()
+    {
+        timer = 120f;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        timer -= Time.deltaTime;
-        healthBar.fillAmount = timer/120f;
+        if (!GameManager.Instance.checkPause())
+        {
+            timer -= Time.deltaTime;
+            healthBar.fillAmount = timer / 120f;
 
-        if(timer <= 0){
+            if (timer <= 0)
+            {
 
-            gameManager.GameOver();
+                gameManager.GameOver();
 
+            }
+
+            //Debug.Log(timer);
         }
-
-        Debug.Log(timer);
     }
     
     }
