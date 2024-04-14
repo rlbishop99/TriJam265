@@ -72,7 +72,7 @@ public class VirusController : MonoBehaviour
     private void OnMouseDown() {
         if (!GameManager.Instance.checkPause())
         {
-            if (gameManager.CheckVirus(gameObject)){
+            if (gameManager.playingQTE == false && gameManager.CheckVirus(gameObject)){
                 rb.velocity = Vector3.zero;
             }
         }

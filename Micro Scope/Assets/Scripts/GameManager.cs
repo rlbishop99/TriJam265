@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     private bool timeToSpawn = false;
     private bool currentVirusHasSpawned = false;
 
-    private bool playingQTE = false;
+    public bool playingQTE = false;
     public bool acceptInput;
 
     private bool isGamePause = false;
@@ -69,6 +69,11 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        if(playingQTE){
+            EndQTE();
+            playingQTE = false;
+        }
+
         scoreCount = 0;
         scoreText.text = scoreCount.ToString();
 
@@ -92,6 +97,11 @@ public class GameManager : MonoBehaviour
 
     public void playAgain()
     {
+        if(playingQTE){
+            EndQTE();
+            playingQTE = false;
+        }
+
         scoreCount = 0;
         scoreText.text = scoreCount.ToString();
 
@@ -139,7 +149,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnViruses(){
 
-        for(int i = 0; i < 75; i++){
+        for(int i = 0; i < 125; i++){
             GameObject virusToSpawn = viruses[Random.Range(0, viruses.Length)];
             virusToSpawn.gameObject.tag = "Virus";
 
@@ -307,24 +317,4 @@ public class GameManager : MonoBehaviour
         Destroy(gameObject);
         DestroyObject(music);
     }
-
-    // void GetClosest(){
-
-    //     GameObject[] enemies = GameObject.FindGameObjectsWithTag("Virus");
-
-    //     foreach(GameObject enemy in enemies){
-    //         Vector3 enemyPos = gameCamera.WorldToViewportPoint(enemy.transform.position - new Vector3(0.5f, 0.5f, 0));
-    //         if(closest == null || enemyPos.magnitude < closest.transform.position.magnitude){
-                
-    //             if(closest.GetComponent<SpriteRenderer>().color != Color.white){
-    //                 closest.GetComponent<SpriteRenderer>().color = Color.white;
-    //             }
-
-    //             closest = enemy;
-    //             Debug.Log(closest.name);
-    //             closest.GetComponent<SpriteRenderer>().color = Color.green;
-    //         }
-    //     }
-
-    // }
 }

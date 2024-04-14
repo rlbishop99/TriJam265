@@ -44,20 +44,20 @@ public class PlayerController : MonoBehaviour
 
                 if ((x != 0 || y != 0) && !scrollplaying)
                 {
-                    scroll.Play();
+                    //scroll.Play();
                     scrollplaying = true;
                 }
                 else
                 {
-                    scroll.Stop();
+                    //scroll.Stop();
                     scrollplaying = false;
                 }
             }
             else
             {
                 speed = 0;
-                scroll.Stop();
-                scrollplaying = false;
+                //scroll.Stop();
+                //scrollplaying = false;
             }
 
             Vector3 dir = new Vector3(x, y, 0);
